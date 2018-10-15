@@ -738,14 +738,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
-  name = "gopkg.in/go-playground/validator.v8"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
-  version = "v8.18.2"
-
-[[projects]]
   digest = "1:e2f64cca6e235f32cd4c2f9be9ae0cda1f8608fc6fdb68936e8d10e4e0bb074d"
   name = "gopkg.in/go-playground/validator.v9"
   packages = ["."]
@@ -786,7 +778,6 @@
     "github.com/mongodb/mongo-go-driver/mongo",
     "github.com/rs/cors",
     "github.com/unrolled/secure",
-    "gopkg.in/go-playground/validator.v8",
     "gopkg.in/go-playground/validator.v9",
   ]
   solver-name = "gps-cdcl"
