@@ -9,6 +9,7 @@ import (
 	"github.com/gobuffalo/envy"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/unrolled/secure"
+	validator "gopkg.in/go-playground/validator.v9"
 
 	"github.com/gobuffalo/x/sessions"
 	"github.com/rs/cors"
@@ -19,6 +20,7 @@ import (
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
 var db *mgo.Database
+var validate *validator.Validate
 
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
@@ -62,6 +64,9 @@ func App() *buffalo.App {
 		}
 		db = client.Database("i1820")
 
+		// validator
+		validate = validator.New()
+
 		if ENV == "development" {
 			app.Use(middleware.ParameterLogger)
 		}
@@ -71,6 +76,7 @@ func App() *buffalo.App {
 
 		api := app.Group("/api/v1")
 		{
+			// auth routes contains login, logout and signup
 			auth := api.Group("/auth")
 			{
 				ar := AuthResource{}
