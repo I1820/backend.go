@@ -14,10 +14,14 @@
 package models
 
 // User represents users that signup into I1820 platform.
-// each user can have many projects. projects can exist for multiple users at the same time.
+// Each user can have many projects. projects can exist for multiple users at the same time.
+// I1820 do not store tokens in database, tokens just check by hand in auth middleware.
 type User struct {
-	Username string `json:"username" bson:"username"`
-	Email    string `json:"email" bson:"email"`
-	Password string `json:"password,omitempty" bson:"password"`
-	Token    string `json:"token,omitempty" bson:"-"`
+	Username  string   `json:"username" bson:"username"`
+	Firstname string   `json:"firstname" bson:"firstname"`
+	Lastname  string   `json:"lastname" bson:"lastname"`
+	Email     string   `json:"email" bson:"email"`
+	Password  string   `json:"password,omitempty" bson:"password"`
+	Token     string   `json:"token,omitempty" bson:"-"`
+	Projects  []string `json:"projects" bson:"projects"`
 }
