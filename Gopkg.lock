@@ -106,7 +106,7 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:c4817f39c76268f3efd2875badfd0dc53da04a1453fa62ba322b73c44da19ccb"
+  digest = "1:516656b001e903fcf04f19dc0ffba4bf2a0372590b8e16cd039a63e3bca3f0a8"
   name = "github.com/gobuffalo/buffalo"
   packages = [
     ".",
@@ -114,7 +114,6 @@
     "middleware",
     "middleware/csrf",
     "middleware/ssl",
-    "middleware/tokenauth",
     "render",
     "servers",
     "worker",
@@ -743,7 +742,6 @@
     "github.com/gobuffalo/buffalo",
     "github.com/gobuffalo/buffalo/middleware",
     "github.com/gobuffalo/buffalo/middleware/ssl",
-    "github.com/gobuffalo/buffalo/middleware/tokenauth",
     "github.com/gobuffalo/buffalo/render",
     "github.com/gobuffalo/envy",
     "github.com/gobuffalo/suite",
