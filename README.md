@@ -13,3 +13,15 @@ together in a simple fashion.
 I1820 backend, it provides a single interface to all services.
 It adds user management and authorization into the platform.
 And at the end it hosts our web application that is written in Angular with :heart: and memory of someone who is not among us.
+
+## Backend
+Users must have an unique username in I1820 platform. Backend heavily uses JWT tokens for each of its works.
+
+## User-Interface
+The I1820 main user interface that users interact with it.
+
+### Components
+I think these component can help us in the way of development:
+
+- [json formatter](https://github.com/mohsen1/json-formatter)
+- [Angular Material](https://material.angular.io/)
