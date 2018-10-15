@@ -97,6 +97,8 @@ func getJwtToken(authString string) (string, error) {
 
 // Signup creates new user with given information amd store it in database.
 // Signup do not create any token for new user.
+// This function is mapped to the path
+// POST /register
 func (a AuthResource) Signup(c buffalo.Context) error {
 	var rq signupReq
 
@@ -124,6 +126,8 @@ func (a AuthResource) Signup(c buffalo.Context) error {
 }
 
 // Login checks given credentials and generate jwt token
+// This function is mapped to the path
+// POST /login
 func (a AuthResource) Login(c buffalo.Context) error {
 	var rq loginReq
 	var u models.User
