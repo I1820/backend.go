@@ -18,9 +18,19 @@ import (
 // AuthResource represents login, logout and signup
 type AuthResource struct{}
 
+// login request payload
 type loginReq struct {
-	Username string
-	Password string
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+// signup request payload
+type signupReq struct {
+	Firstname string `json:"firstname" validate:"required"`
+	Lastname  string `json:"lastname" validate:"required"`
+	Username  string `json:"username" validate:"required,alphanum"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
 }
 
 // AuthMiddleware and getJwtToken are taken from
@@ -61,8 +71,8 @@ func AuthMiddleware(next buffalo.Handler) buffalo.Handler {
 		}
 
 		// set the user as context parameter.
-		// so that the actions can use the username from jwt token
-		c.Set("username", claims["username"])
+		// so that the actions can use the user object from jwt token
+		c.Set("user", claims["user"])
 
 		// calling next handler
 		return next(c)
@@ -85,14 +95,27 @@ func getJwtToken(authString string) (string, error) {
 	return tokenString, nil
 }
 
-// Signup creates new user with given information
+// Signup creates new user with given information amd store it in database.
+// Signup do not create any token for new user.
 func (a AuthResource) Signup(c buffalo.Context) error {
-	var u models.User
+	var rq signupReq
 
-	if err := c.Bind(&u); err != nil {
+	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+	if err := validate.Struct(rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
+	// is there any need for hashing the password before store it in database?
+	u := models.User{
+		Firstname: rq.Firstname,
+		Lastname:  rq.Lastname,
+		Username:  rq.Username,
+		Email:     rq.Email,
+		Password:  rq.Password,
+		Projects:  make([]string, 0),
+	}
 	if _, err := db.Collection("users").InsertOne(c, u); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -106,6 +129,9 @@ func (a AuthResource) Login(c buffalo.Context) error {
 	var u models.User
 
 	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+	if err := validate.Struct(rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
 
@@ -126,7 +152,7 @@ func (a AuthResource) Login(c buffalo.Context) error {
 
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
-	claims["username"] = u.Username
+	claims["user"] = u
 	claims["exp"] = time.Now().Add(time.Second * 120).Unix()
 
 	// Generate encoded token and send it as response
