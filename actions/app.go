@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
@@ -90,6 +91,9 @@ func App() *buffalo.App {
 				projects.ANY("{path:.*}", ProjectsHandler)
 			}
 		}
+
+		// user-interface based on lovely angular
+		app.ServeFiles("/", http.Dir("./ui/dist/i1820"))
 	}
 
 	return app
