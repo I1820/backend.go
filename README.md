@@ -12,3 +12,4 @@ Each platform with microservice architecture has a web backend component. It jus
 together in a simple fashion.
 I1820 backend, it provides a single interface to all services.
 It adds user management and authorization into the platform.
+And at the end it hosts our web application that is written in Angular with :love: and memory of someone who is not among us.
