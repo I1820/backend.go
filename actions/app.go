@@ -42,18 +42,6 @@ func App() *buffalo.App {
 			SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
 		}))
 
-		// Set the request content type to JSON
-		app.Use(middleware.SetContentType("application/json"))
-		app.Use(func(next buffalo.Handler) buffalo.Handler {
-			return func(c buffalo.Context) error {
-				defer func() {
-					c.Response().Header().Set("Content-Type", "application/json")
-				}()
-
-				return next(c)
-			}
-		})
-
 		// Create mongodb connection
 		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
 		client, err := mgo.NewClient(url)
@@ -83,6 +71,7 @@ func App() *buffalo.App {
 				ar := AuthResource{}
 				auth.POST("/login", ar.Login)
 				auth.POST("/register", ar.Signup)
+				auth.GET("/refresh", AuthMiddleware(ar.Refresh))
 			}
 
 			projects := api.Group("/projects")
