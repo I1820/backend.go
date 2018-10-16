@@ -64,3 +64,15 @@
 [[constraint]]
   name = "gopkg.in/go-playground/validator.v9"
   version = "9.21.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/mw-contenttype"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/mw-forcessl"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/gobuffalo/mw-paramlogger"

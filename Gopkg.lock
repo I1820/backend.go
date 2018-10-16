@@ -125,7 +125,7 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:7cb298e91211a25321ac4e7f6c896e3d4137038026bc3c6e39abf9b3b98f1bf2"
+  digest = "1:91db502b4b61442fa3955175ecef37eca3c7ecf93328164362e693f75c8b5f81"
   name = "github.com/gobuffalo/buffalo"
   packages = [
     ".",
@@ -133,7 +133,6 @@
     "meta",
     "middleware",
     "middleware/csrf",
-    "middleware/ssl",
     "render",
     "servers",
     "worker",
@@ -864,9 +863,11 @@
     "github.com/dgrijalva/jwt-go",
     "github.com/gobuffalo/buffalo",
     "github.com/gobuffalo/buffalo/middleware",
-    "github.com/gobuffalo/buffalo/middleware/ssl",
     "github.com/gobuffalo/buffalo/render",
     "github.com/gobuffalo/envy",
+    "github.com/gobuffalo/mw-contenttype",
+    "github.com/gobuffalo/mw-forcessl",
+    "github.com/gobuffalo/mw-paramlogger",
     "github.com/gobuffalo/suite",
     "github.com/gobuffalo/x/sessions",
     "github.com/markbates/grift/grift",

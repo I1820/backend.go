@@ -5,9 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/buffalo/middleware"
-	"github.com/gobuffalo/buffalo/middleware/ssl"
 	"github.com/gobuffalo/envy"
+	contenttype "github.com/gobuffalo/mw-contenttype"
+	forcessl "github.com/gobuffalo/mw-forcessl"
+	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/unrolled/secure"
 	validator "gopkg.in/go-playground/validator.v9"
@@ -37,10 +38,15 @@ func App() *buffalo.App {
 			SessionName: "_backend_session",
 		})
 		// Automatically redirect to SSL
-		app.Use(ssl.ForceSSL(secure.Options{
+		app.Use(forcessl.Middleware(secure.Options{
 			SSLRedirect:     ENV == "production",
 			SSLProxyHeaders: map[string]string{"X-Forwarded-Proto": "https"},
 		}))
+
+		// If no content type is sent by the client
+		// the application/json will be set, otherwise the client's
+		// content type will be used.
+		app.Use(contenttype.Add("application/json"))
 
 		// Create mongodb connection
 		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
@@ -57,7 +63,7 @@ func App() *buffalo.App {
 		validate = validator.New()
 
 		if ENV == "development" {
-			app.Use(middleware.ParameterLogger)
+			app.Use(paramlogger.ParameterLogger)
 		}
 
 		// Routes
