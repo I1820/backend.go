@@ -170,3 +170,32 @@ func (a AuthResource) Login(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(u))
 }
+
+// Refresh refreshes given token with new expiration time
+func (a AuthResource) Refresh(c buffalo.Context) error {
+	var u models.User
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	// Create token
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	// Set claims
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user"] = u
+	claims["exp"] = time.Now().Add(time.Second * 120).Unix() // tokens expire in 2 minutes
+
+	// Generate encoded token and send it as response
+	encodedToken, err := token.SignedString([]byte(envy.Get("JWT_SECRET", "i1820")))
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+	u.Token = encodedToken
+
+	u.Password = "" // Don't send password
+
+	return c.Render(http.StatusOK, r.JSON(u))
+}
