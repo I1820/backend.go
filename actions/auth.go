@@ -157,7 +157,7 @@ func (a AuthResource) Login(c buffalo.Context) error {
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user"] = u
-	claims["exp"] = time.Now().Add(time.Second * 120).Unix()
+	claims["exp"] = time.Now().Add(time.Second * 120).Unix() // tokens expire in 2 minutes
 
 	// Generate encoded token and send it as response
 	encodedToken, err := token.SignedString([]byte(envy.Get("JWT_SECRET", "i1820")))
