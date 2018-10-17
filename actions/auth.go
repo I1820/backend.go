@@ -18,6 +18,23 @@ import (
 // AuthResource represents login, logout and signup
 type AuthResource struct{}
 
+// UserClaims contains required information in I1820 platform
+// for logged in user.
+type UserClaims struct {
+	U   models.User
+	Exp time.Time
+}
+
+// Valid checks token expiration time
+func (uc UserClaims) Valid() error {
+	// if token is expired, return with status unathorized
+	if uc.Exp.Before(time.Now()) {
+		return fmt.Errorf("Token in expired %g minutes ago", time.Now().Sub(uc.Exp).Minutes())
+	}
+
+	return nil
+}
+
 // login request payload
 type loginReq struct {
 	Username string `json:"username" validate:"required"`
@@ -52,7 +69,7 @@ func AuthMiddleware(next buffalo.Handler) buffalo.Handler {
 		}
 
 		// validating and parsing the tokenString
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 			// Validating if algorithm used for signing is same as the algorithm in token
 			if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 				return nil, errors.New("unexpected signing method")
@@ -60,19 +77,13 @@ func AuthMiddleware(next buffalo.Handler) buffalo.Handler {
 			return key, nil
 		})
 		// if error validating jwt token, return with status unauthorized
-		if err != nil {
+		if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
+			// set the user as context parameter.
+			// so that the actions can use the user object from jwt token
+			c.Set("user", claims.U)
+		} else {
 			return c.Error(http.StatusUnauthorized, err)
 		}
-
-		claims := token.Claims.(jwt.MapClaims)
-		// if token expired, return with status unathorized
-		if int64(claims["exp"].(float64)) < time.Now().Unix() {
-			return c.Error(http.StatusUnauthorized, err)
-		}
-
-		// set the user as context parameter.
-		// so that the actions can use the user object from jwt token
-		c.Set("user", claims["user"])
 
 		// calling next handler
 		return next(c)
@@ -152,12 +163,10 @@ func (a AuthResource) Login(c buffalo.Context) error {
 	}
 
 	// Create token
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["user"] = u
-	claims["exp"] = time.Now().Add(time.Second * 120).Unix() // tokens expire in 2 minutes
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
+		U:   u,                                 // logged in user information
+		Exp: time.Now().Add(time.Second * 120), // tokens expire in 2 minutes
+	})
 
 	// Generate encoded token and send it as response
 	encodedToken, err := token.SignedString([]byte(envy.Get("JWT_SECRET", "i1820")))
@@ -181,12 +190,10 @@ func (a AuthResource) Refresh(c buffalo.Context) error {
 	}
 
 	// Create token
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Set claims
-	claims := token.Claims.(jwt.MapClaims)
-	claims["user"] = u
-	claims["exp"] = time.Now().Add(time.Second * 120).Unix() // tokens expire in 2 minutes
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
+		U:   u,                                 // logged in user information
+		Exp: time.Now().Add(time.Second * 120), // tokens expire in 2 minutes
+	})
 
 	// Generate encoded token and send it as response
 	encodedToken, err := token.SignedString([]byte(envy.Get("JWT_SECRET", "i1820")))
