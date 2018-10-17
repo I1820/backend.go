@@ -125,13 +125,12 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:91db502b4b61442fa3955175ecef37eca3c7ecf93328164362e693f75c8b5f81"
+  digest = "1:4b12a08a3cb0168699ecc8be538e68f0242de8a237e2d364a0a552ac76106f7d"
   name = "github.com/gobuffalo/buffalo"
   packages = [
     ".",
     "binding",
     "meta",
-    "middleware",
     "middleware/csrf",
     "render",
     "servers",
@@ -151,17 +150,6 @@
   pruneopts = "UT"
   revision = "3f8654f1760e0ea827055d353a4f0f41f067e6e8"
   version = "v1.1.1"
-
-[[projects]]
-  digest = "1:4c81a20cee8f59b3bad43431af2871bb8f0178316e880cf331bc694daa8f0a03"
-  name = "github.com/gobuffalo/buffalo-pop"
-  packages = [
-    "pop",
-    "pop/popmw",
-  ]
-  pruneopts = "UT"
-  revision = "ea19c1d4cd4a89c78b13ed2cd1c70c538a72ba9e"
-  version = "v1.0.5"
 
 [[projects]]
   digest = "1:38101365bdbea4ca2746cf7bac064b3f18d6a5561787d653a54f80c7afb4b513"
@@ -862,7 +850,6 @@
   input-imports = [
     "github.com/dgrijalva/jwt-go",
     "github.com/gobuffalo/buffalo",
-    "github.com/gobuffalo/buffalo/middleware",
     "github.com/gobuffalo/buffalo/render",
     "github.com/gobuffalo/envy",
     "github.com/gobuffalo/mw-contenttype",
