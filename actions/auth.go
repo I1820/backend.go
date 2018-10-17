@@ -182,7 +182,6 @@ func (a AuthResource) Login(c buffalo.Context) error {
 
 // Refresh refreshes given token with new expiration time
 func (a AuthResource) Refresh(c buffalo.Context) error {
-	var u models.User
 	// get user from request context
 	u, ok := c.Value("user").(models.User)
 	if !ok {
