@@ -26,7 +26,7 @@
 
 
 [[constraint]]
-  branch = "master"
+  version = "0.0.12"
   name = "github.com/mongodb/mongo-go-driver"
 
 [[constraint]]
@@ -76,3 +76,15 @@
 [[constraint]]
   branch = "master"
   name = "github.com/gobuffalo/mw-paramlogger"
+
+[[constraint]]
+  name = "github.com/go-resty/resty"
+  version = "1.9.1"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/I1820/types"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/I1820/pm"
