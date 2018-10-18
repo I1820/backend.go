@@ -35,8 +35,43 @@ type projectReq struct {
 	Envs map[string]string `json:"envs"`                     // project environment variables
 }
 
+// List lists user projects. It first gets projects list from pm then returns only the projects that are exist in
+// user porject list.
+// This function is mapped to the path GET /projects
+func (v ProjectsResource) List(c buffalo.Context) error {
+	var ps []pmmodels.Project
+	var ups []pmmodels.Project
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	// gets all projects from pm
+	// I1820/pm/ProjectsResource.List
+	resp, err := v.pmclient.R().SetResult(&ps).Get("api/projects")
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	if resp.IsError() {
+		return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+	}
+
+	for _, p := range ps {
+		for _, id := range u.Projects {
+			if p.ID == id {
+				ups = append(ups, p)
+			}
+		}
+	}
+
+	return c.Render(http.StatusOK, r.JSON(ups))
+}
+
 // Create creates new project in pm and if it successful then adds newly created project to user projects
-// path POST /projects
+// This function is mapped to the path POST /projects
 func (v ProjectsResource) Create(c buffalo.Context) error {
 	var rq projectReq
 	if err := c.Bind(&rq); err != nil {
