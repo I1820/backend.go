@@ -1002,6 +1002,8 @@
     "github.com/markbates/grift/grift",
     "github.com/mongodb/mongo-go-driver/bson",
     "github.com/mongodb/mongo-go-driver/mongo",
+    "github.com/mongodb/mongo-go-driver/mongo/findopt",
+    "github.com/mongodb/mongo-go-driver/mongo/mongoopt",
     "github.com/rs/cors",
     "github.com/unrolled/secure",
     "gopkg.in/go-playground/validator.v9",
