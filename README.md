@@ -17,6 +17,9 @@ And at the end it hosts our web application that is written in Angular with :hea
 ## Backend
 Users must have an unique username in I1820 platform. Backend heavily uses JWT tokens for each of its works.
 
+### Operations need token refreshing
+1. Create project
+
 ## User-Interface
 The I1820 main user interface that users interact with it.
 Check [here](ui) for more information about how to use it.
