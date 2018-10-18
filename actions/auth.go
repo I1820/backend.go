@@ -180,12 +180,21 @@ func (a AuthResource) Login(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(u))
 }
 
-// Refresh refreshes given token with new expiration time
+// Refresh refreshes given token with new expiration time.
+// It updates user information from database.
 func (a AuthResource) Refresh(c buffalo.Context) error {
 	// get user from request context
 	u, ok := c.Value("user").(models.User)
 	if !ok {
 		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	res := db.Collection("users").FindOne(c, bson.NewDocument(
+		bson.EC.String("username", u.Username),
+	))
+
+	if err := res.Decode(&u); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
 	}
 
 	// Create token
