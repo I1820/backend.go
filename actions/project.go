@@ -13,25 +13,75 @@ package actions
 import (
 	"fmt"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 
+	"github.com/I1820/backend/models"
+	pmmodels "github.com/I1820/pm/models"
+	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/envy"
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo/findopt"
+	"github.com/mongodb/mongo-go-driver/mongo/mongoopt"
 )
 
-// ProjectsHandler sends request (proxies) to pm
-func ProjectsHandler(c buffalo.Context) error {
-	path := c.Param("path")
-	user := c.Value("username").(string)
+// ProjectsResource controls the users access to projects and proxies their request to pm
+type ProjectsResource struct {
+	buffalo.Resource
+	pmclient *resty.Client
+}
 
-	url, err := url.Parse(fmt.Sprintf("http://%s:8080", envy.Get("PM_HOST", "127.0.0.1")))
+// project request payload
+type projectReq struct {
+	Name string            `json:"name" validate:"required"` // project name
+	Envs map[string]string `json:"envs"`                     // project environment variables
+}
+
+// Create creates new project in pm and if it successful then adds newly created project to user projects
+// path POST /projects
+func (v ProjectsResource) Create(c buffalo.Context) error {
+	var rq projectReq
+	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	if err := validate.Struct(rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	var p pmmodels.Project
+
+	// creates a project in pm with `projectReq`
+	// I1820/pm/ProjectsResource.Create
+	resp, err := v.pmclient.R().SetBody(map[string]interface{}{
+		"name":  rq.Name,
+		"owner": u.Email,
+		"envs":  rq.Envs,
+	}).SetResult(&p).Post("api/projects")
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	c.Request().URL.Path = fmt.Sprintf("api/%s/projects/%s", user, path)
-	return buffalo.WrapHandler(
-		httputil.NewSingleHostReverseProxy(url),
-	)(c)
+	if resp.IsError() {
+		return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+	}
+
+	// adds newly created project into user projects
+	dr := db.Collection("users").FindOneAndUpdate(c, bson.NewDocument(
+		bson.EC.String("username", u.Username),
+	), bson.NewDocument(
+		bson.EC.SubDocumentFromElements("$addToSet", bson.EC.String("projects", p.ID)),
+	), findopt.ReturnDocument(mongoopt.After))
+	if err := dr.Decode(&u); err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+
+	// and then update jwt token but how?
+	// it is on client for now
+
+	return c.Render(http.StatusOK, r.JSON(p))
 }
