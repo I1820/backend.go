@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	contenttype "github.com/gobuffalo/mw-contenttype"
@@ -13,6 +14,7 @@ import (
 	"github.com/unrolled/secure"
 	validator "gopkg.in/go-playground/validator.v9"
 
+	"github.com/I1820/types"
 	"github.com/gobuffalo/x/sessions"
 	"github.com/rs/cors"
 )
@@ -80,11 +82,10 @@ func App() *buffalo.App {
 				auth.GET("/refresh", AuthMiddleware(ar.Refresh))
 			}
 
-			projects := api.Group("/projects")
-			{
-				projects.Use(AuthMiddleware)
-				projects.ANY("{path:.*}", ProjectsHandler)
-			}
+			// proxies to pm
+			api.Resource("projects", ProjectsResource{
+				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
+			}).Use(AuthMiddleware)
 		}
 
 		// user-interface based on lovely angular
