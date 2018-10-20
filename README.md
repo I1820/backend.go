@@ -29,3 +29,4 @@ I think these component can help us in the way of development:
 
 - [json formatter](https://github.com/mohsen1/json-formatter)
 - [Angular Material](https://material.angular.io/)
+- [Angular Amcharts](https://github.com/amcharts/amcharts3-angular2)
