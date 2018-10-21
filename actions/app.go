@@ -86,6 +86,10 @@ func App() *buffalo.App {
 			api.Resource("projects", ProjectsResource{
 				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
 			}).Use(AuthMiddleware)
+			api.Resource("projects/{project_id}/things", ThingsResource{
+				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
+			}).Use(AuthMiddleware)
+
 		}
 
 		// user-interface based on lovely angular
