@@ -164,8 +164,8 @@ func (a AuthResource) Login(c buffalo.Context) error {
 
 	// Create token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		U:   u,                                 // logged in user information
-		Exp: time.Now().Add(time.Second * 120), // tokens expire in 2 minutes
+		U:   u,                                  // logged in user information
+		Exp: time.Now().Add(time.Hour * 24 * 7), // tokens expire in 7 days
 	})
 
 	// Generate encoded token and send it as response
@@ -199,8 +199,8 @@ func (a AuthResource) Refresh(c buffalo.Context) error {
 
 	// Create token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		U:   u,                                 // logged in user information
-		Exp: time.Now().Add(time.Second * 120), // tokens expire in 2 minutes
+		U:   u,                                  // logged in user information
+		Exp: time.Now().Add(time.Hour * 24 * 7), // tokens expire in 7 days
 	})
 
 	// Generate encoded token and send it as response
