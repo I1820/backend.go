@@ -120,3 +120,38 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(p))
 }
+
+// Show shows given project details that are fetched from pm.
+// This function is mapped to the path GET /projects/{proejct_id}
+func (v ProjectsResource) Show(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	for _, p := range u.Projects {
+		if p == projectID {
+			var p pmmodels.Project
+
+			// shows a project from pm
+			// I1820/pm/ProjectsResource.Show
+			resp, err := v.pmclient.R().SetResult(&p).SetPathParams(map[string]string{
+				"projectID": projectID,
+			}).Get("api/projects/{projectID}")
+			if err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			if resp.IsError() {
+				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+			}
+
+			return c.Render(http.StatusOK, r.JSON(p))
+		}
+	}
+
+	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+}
