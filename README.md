@@ -23,10 +23,3 @@ Users must have an unique username in I1820 platform. Backend heavily uses JWT t
 ## User-Interface
 The I1820 main user interface that users interact with it.
 Check [here](ui) for more information about how to use it.
-
-### Components
-I think these component can help us in the way of development:
-
-- [json formatter](https://github.com/mohsen1/json-formatter)
-- [Angular Material](https://material.angular.io/)
-- [Angular Amcharts](https://github.com/amcharts/amcharts3-angular2)
