@@ -36,3 +36,4 @@ jobs:
 
       script:
         - npm run lint
+        - npm run stylelint
