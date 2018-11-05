@@ -2,7 +2,6 @@ package actions
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
@@ -91,9 +90,6 @@ func App() *buffalo.App {
 			}).Use(AuthMiddleware)
 
 		}
-
-		// user-interface based on lovely angular
-		app.ServeFiles("/", http.Dir("./ui/dist/i1820"))
 	}
 
 	return app
