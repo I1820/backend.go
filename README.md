@@ -14,8 +14,9 @@ I1820 backend, it provides a single interface to all services.
 It adds user management and authorization into the platform.
 And at the end it hosts our web application that is written in Angular with :heart: and memory of someone who is not among us.
 
-## Backend
-Users must have an unique username in I1820 platform. Backend heavily uses JWT tokens for each of its works.
+## Notes that are worth taking
+Users must have an **unique username** in I1820 platform.
+Backend heavily uses JWT tokens for each of its works.
 
 ### Operations need token refreshing
 1. Create project
