@@ -20,7 +20,7 @@ type AuthResource struct{}
 
 // refresh request payload
 type refreshReq struct {
-	Token string `json: "token"`
+	Token string `json:"token"`
 }
 
 // login request payload
