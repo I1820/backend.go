@@ -57,5 +57,6 @@ func (as *ActionSuite) Test_AuthResource_Signup_Login() {
 	})
 	as.Equalf(200, resl.Code, "Error: %s", resl.Body.String())
 	resr.Bind(&ur)
-	as.NotNil(ur.Token) // token must be there
+	as.NotNil(ur.AccessToken)  // token must be there
+	as.NotNil(ur.RefreshToken) // token must be there
 }

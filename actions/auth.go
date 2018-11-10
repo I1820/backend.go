@@ -18,27 +18,16 @@ import (
 // AuthResource represents login, logout and signup
 type AuthResource struct{}
 
-// UserClaims contains required information in I1820 platform
-// for logged in user.
-type UserClaims struct {
-	U   models.User
-	Exp time.Time
-}
-
-// Valid checks token expiration time
-func (uc UserClaims) Valid() error {
-	// if token is expired, return with status unathorized
-	if uc.Exp.Before(time.Now()) {
-		return fmt.Errorf("Token in expired %g minutes ago", time.Now().Sub(uc.Exp).Minutes())
-	}
-
-	return nil
+// refresh request payload
+type refreshReq struct {
+	Token string `json: "token"`
 }
 
 // login request payload
 type loginReq struct {
-	Username string `json:"username" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Username   string `json:"username" validate:"required"`
+	Password   string `json:"password" validate:"required"`
+	RememberMe bool   `json:"remember"`
 }
 
 // signup request payload
@@ -53,7 +42,7 @@ type signupReq struct {
 // AuthMiddleware and getJwtToken are taken from
 // https://github.com/gobuffalo/buffalo/blob/master/middleware/tokenauth/tokenauth.go
 
-// AuthMiddleware is an Authorization middleware using JWT. it validates JWT tokens and checks
+// AuthMiddleware is an Authorization middleware using JWT. it validates access tokens and checks
 // their expiration time.
 func AuthMiddleware(next buffalo.Handler) buffalo.Handler {
 	key := []byte(envy.Get("JWT_SECRET", "i1820"))
@@ -76,6 +65,10 @@ func AuthMiddleware(next buffalo.Handler) buffalo.Handler {
 			}
 			return key, nil
 		})
+		if err != nil {
+			return c.Error(http.StatusUnauthorized, err)
+		}
+
 		// if error validating jwt token, return with status unauthorized
 		if claims, ok := token.Claims.(*UserClaims); ok && token.Valid {
 			// set the user as context parameter.
@@ -162,18 +155,21 @@ func (a AuthResource) Login(c buffalo.Context) error {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	// Create token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		U:   u,                                  // logged in user information
-		Exp: time.Now().Add(time.Hour * 24 * 7), // tokens expire in 7 days
-	})
-
-	// Generate encoded token and send it as response
-	encodedToken, err := token.SignedString([]byte(envy.Get("JWT_SECRET", "i1820")))
+	accessToken, err := NewAccessToken(u)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
-	u.Token = encodedToken
+	u.AccessToken = accessToken
+
+	d := time.Hour * 1
+	if rq.RememberMe {
+		d = time.Hour * 24 * 7 // remembers the user for a week
+	}
+	refreshToken, err := NewRefreshToken(u.Username, d)
+	if err != nil {
+		return c.Error(http.StatusInternalServerError, err)
+	}
+	u.RefreshToken = refreshToken
 
 	u.Password = "" // Don't send password
 
@@ -183,32 +179,51 @@ func (a AuthResource) Login(c buffalo.Context) error {
 // Refresh refreshes given token with new expiration time.
 // It updates user information from database.
 func (a AuthResource) Refresh(c buffalo.Context) error {
-	// get user from request context
-	u, ok := c.Value("user").(models.User)
-	if !ok {
-		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	key := []byte(envy.Get("JWT_SECRET", "i1820"))
+
+	var rq refreshReq
+	if err := c.Bind(&rq); err != nil {
+		return c.Error(http.StatusBadRequest, err)
+	}
+	tokenString := rq.Token
+
+	// validating and parsing the tokenString
+	token, err := jwt.ParseWithClaims(tokenString, &RefreshClaims{}, func(token *jwt.Token) (interface{}, error) {
+		// Validating if algorithm used for signing is same as the algorithm in token
+		if token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
+			return nil, errors.New("unexpected signing method")
+		}
+		return key, nil
+	})
+	if err != nil {
+		return c.Error(http.StatusUnauthorized, err)
 	}
 
+	username := ""
+	// if error validating jwt token, return with status unauthorized
+	if claims, ok := token.Claims.(*RefreshClaims); ok && token.Valid {
+		username = claims.ID
+	} else {
+		return c.Error(http.StatusUnauthorized, err)
+	}
+
+	var u models.User
+
 	res := db.Collection("users").FindOne(c, bson.NewDocument(
-		bson.EC.String("username", u.Username),
+		bson.EC.String("username", username),
 	))
 
 	if err := res.Decode(&u); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
 
-	// Create token
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
-		U:   u,                                  // logged in user information
-		Exp: time.Now().Add(time.Hour * 24 * 7), // tokens expire in 7 days
-	})
-
-	// Generate encoded token and send it as response
-	encodedToken, err := token.SignedString([]byte(envy.Get("JWT_SECRET", "i1820")))
+	accessToken, err := NewAccessToken(u)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
-	u.Token = encodedToken
+
+	u.AccessToken = accessToken
+	u.RefreshToken = tokenString // uses the old refresh token.
 
 	u.Password = "" // Don't send password
 

@@ -78,7 +78,7 @@ func App() *buffalo.App {
 				ar := AuthResource{}
 				auth.POST("/login", ar.Login)
 				auth.POST("/register", ar.Signup)
-				auth.GET("/refresh", AuthMiddleware(ar.Refresh))
+				auth.POST("/refresh", ar.Refresh)
 			}
 
 			// proxies to pm
