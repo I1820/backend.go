@@ -89,6 +89,9 @@ func App() *buffalo.App {
 				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
 			}).Use(AuthMiddleware)
 
+			// proxies to wf
+			api.POST("wf/{service}", WFHandler)
+
 		}
 	}
 
