@@ -34,6 +34,7 @@ func WFHandler(c buffalo.Context) error {
 
 	wfclient := resty.New().SetHostURL(envy.Get("WF_URL", "http://127.0.0.1:6976")).SetError(types.Error{})
 
+	// send request to wf
 	var w interface{}
 	resp, err := wfclient.R().SetBody(rq).SetResult(&w).SetPathParams(map[string]string{
 		"service": c.Param("service"),
