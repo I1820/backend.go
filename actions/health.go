@@ -24,12 +24,12 @@ import (
 func PMHealthHandler(c buffalo.Context) error {
 	var a string
 	resp, err := pmclient.R().SetResult(&a).Get("about")
-	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err != nil { // there is no connection to the component
+		return c.Render(http.StatusOK, r.JSON(false))
 	}
 
-	if resp.IsError() {
-		return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+	if resp.IsError() { // something bad is happing
+		return c.Render(http.StatusOK, r.JSON(false))
 	}
 
 	return c.Render(http.StatusOK, r.JSON(a == "18.20 is leaving us"))
@@ -40,11 +40,11 @@ func PMHealthHandler(c buffalo.Context) error {
 func WFHealthHandler(c buffalo.Context) error {
 	var a string
 	resp, err := wfclient.R().SetResult(&a).Get("about")
-	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+	if err != nil { // there is no connection to the component
+		return c.Render(http.StatusOK, r.JSON(false))
 	}
 
-	if resp.IsError() {
+	if resp.IsError() { // something bad is happing
 		return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
 	}
 
