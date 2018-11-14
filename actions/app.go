@@ -25,6 +25,10 @@ var app *buffalo.App
 var db *mgo.Database
 var validate *validator.Validate
 
+// HTTP clients
+var pmclient = resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{})
+var wfclient = resty.New().SetHostURL(envy.Get("WF_URL", "http://127.0.0.1:6976")).SetError(types.Error{})
+
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
 // application.
@@ -85,15 +89,12 @@ func App() *buffalo.App {
 			health := api.Group("/health")
 			{
 				health.GET("/pm", PMHealthHandler)
+				health.GET("/wf", WFHealthHandler)
 			}
 
 			// proxies to pm
-			api.Resource("projects", ProjectsResource{
-				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
-			}).Use(AuthMiddleware)
-			api.Resource("projects/{project_id}/things", ThingsResource{
-				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
-			}).Use(AuthMiddleware)
+			api.Resource("projects", ProjectsResource{}).Use(AuthMiddleware)
+			api.Resource("projects/{project_id}/things", ThingsResource{}).Use(AuthMiddleware)
 
 			// proxies to wf
 			api.POST("wf/{service}", WFHandler)

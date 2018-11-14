@@ -16,10 +16,7 @@ package actions
 import (
 	"net/http"
 
-	"github.com/I1820/types"
-	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/envy"
 )
 
 // WFHandler handles weather forcecasting requests by proxies them to wf component.
@@ -31,8 +28,6 @@ func WFHandler(c buffalo.Context) error {
 	if err := c.Bind(&rq); err != nil {
 		return c.Error(http.StatusBadRequest, err)
 	}
-
-	wfclient := resty.New().SetHostURL(envy.Get("WF_URL", "http://127.0.0.1:6976")).SetError(types.Error{})
 
 	// send request to wf
 	var w interface{}

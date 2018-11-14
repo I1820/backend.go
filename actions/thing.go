@@ -19,14 +19,12 @@ import (
 
 	"github.com/I1820/backend/models"
 	"github.com/I1820/types"
-	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
 )
 
 // ThingsResource controls the users access to things and proxies their request to pm
 type ThingsResource struct {
 	buffalo.Resource
-	pmclient *resty.Client
 }
 
 // List lists things of given project. This function is mapped to the path
@@ -46,7 +44,7 @@ func (v ThingsResource) List(c buffalo.Context) error {
 
 			// gets project things from pm
 			// I1820/pm/ThingsResource.List
-			resp, err := v.pmclient.R().SetResult(&ts).SetPathParams(map[string]string{
+			resp, err := pmclient.R().SetResult(&ts).SetPathParams(map[string]string{
 				"projectID": projectID,
 			}).Get("api/projects/{projectID}/things")
 			if err != nil {
@@ -87,7 +85,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 
 			// creates a thing in pm
 			// I1820/pm/ThingsResource.Create
-			resp, err := v.pmclient.R().SetBody(rq).SetResult(&t).SetPathParams(map[string]string{
+			resp, err := pmclient.R().SetBody(rq).SetResult(&t).SetPathParams(map[string]string{
 				"projectID": projectID,
 			}).Post("api/projects/{projectID}/things")
 			if err != nil {

@@ -16,7 +16,6 @@ import (
 
 	"github.com/I1820/backend/models"
 	pmmodels "github.com/I1820/pm/models"
-	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
@@ -26,7 +25,6 @@ import (
 // ProjectsResource controls the users access to projects and proxies their request to pm
 type ProjectsResource struct {
 	buffalo.Resource
-	pmclient *resty.Client
 }
 
 // project request payload
@@ -50,7 +48,7 @@ func (v ProjectsResource) List(c buffalo.Context) error {
 
 	// gets all projects from pm
 	// I1820/pm/ProjectsResource.List
-	resp, err := v.pmclient.R().SetResult(&ps).Get("api/projects")
+	resp, err := pmclient.R().SetResult(&ps).Get("api/projects")
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, err)
 	}
@@ -92,7 +90,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 
 	// creates a project in pm with `projectReq`
 	// I1820/pm/ProjectsResource.Create
-	resp, err := v.pmclient.R().SetBody(map[string]interface{}{
+	resp, err := pmclient.R().SetBody(map[string]interface{}{
 		"name":  rq.Name,
 		"owner": u.Email,
 		"envs":  rq.Envs,
@@ -138,7 +136,7 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 
 			// shows a project from pm
 			// I1820/pm/ProjectsResource.Show
-			resp, err := v.pmclient.R().SetResult(&p).SetPathParams(map[string]string{
+			resp, err := pmclient.R().SetResult(&p).SetPathParams(map[string]string{
 				"projectID": projectID,
 			}).Get("api/projects/{projectID}")
 			if err != nil {
