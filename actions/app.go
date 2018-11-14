@@ -81,6 +81,12 @@ func App() *buffalo.App {
 				auth.POST("/refresh", ar.Refresh)
 			}
 
+			// health routes
+			health := api.Group("/health")
+			{
+				health.GET("/pm", PMHealthHandler)
+			}
+
 			// proxies to pm
 			api.Resource("projects", ProjectsResource{
 				pmclient: resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{}),
