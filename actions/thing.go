@@ -102,3 +102,41 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 
 	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 }
+
+// Show shows given thing details that are fetched from pm.
+// This function is mapped to the path GET /projects/{proejct_id}/things/{thing_id}
+func (v ThingsResource) Show(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+	thingID := c.Param("thing_id")
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	for _, p := range u.Projects {
+		if p == projectID {
+			var t types.Thing
+
+			// fetches a thing from pm
+			// I1820/pm/ThingsResource.Show
+			resp, err := pmclient.R().SetResult(&t).SetPathParams(map[string]string{
+				"projectID": projectID,
+				"thingID":   thingID,
+			}).Get("api/projects/{projectID}/things/{thingID}")
+			if err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			if resp.IsError() {
+				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+			}
+
+			return c.Render(http.StatusOK, r.JSON(t))
+		}
+	}
+
+	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+
+}
