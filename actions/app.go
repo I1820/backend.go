@@ -94,11 +94,16 @@ func App() *buffalo.App {
 
 			// proxies to pm
 			api.Resource("projects", ProjectsResource{}).Use(AuthMiddleware)
-			api.Resource("projects/{project_id}/things", ThingsResource{}).Use(AuthMiddleware)
+			pg := api.Group("projects/{project_id}")
+			pg.Use(AuthMiddleware)
+			{
+				tr := ThingsResource{}
+				pg.Resource("things", tr)
+				pg.ANY("things/{thing_id}/tokens/{path:.*}", tr.Tokens)
+			}
 
 			// proxies to wf
 			api.POST("wf/{service}", WFHandler)
-
 		}
 	}
 
