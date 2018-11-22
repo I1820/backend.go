@@ -50,3 +50,19 @@ func WFHealthHandler(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(a == "18.20 is leaving us"))
 }
+
+// DMHealthHandler checks status of dm service.
+// This function is mapped to the path GET /health/dm
+func DMHealthHandler(c buffalo.Context) error {
+	var a string
+	resp, err := dmclient.R().SetResult(&a).Get("about")
+	if err != nil { // there is no connection to the component
+		return c.Render(http.StatusOK, r.JSON(false))
+	}
+
+	if resp.IsError() { // something bad is happing
+		return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+	}
+
+	return c.Render(http.StatusOK, r.JSON(a == "18.20 is leaving us"))
+}

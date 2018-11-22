@@ -27,6 +27,7 @@ var validate *validator.Validate
 
 // HTTP clients
 var pmclient = resty.New().SetHostURL(envy.Get("PM_URL", "http://127.0.0.1:1375")).SetError(types.Error{})
+var dmclient = resty.New().SetHostURL(envy.Get("DM_URL", "http://127.0.0.1:1373")).SetError(types.Error{})
 var wfclient = resty.New().SetHostURL(envy.Get("WF_URL", "http://127.0.0.1:6976")).SetError(types.Error{})
 
 // App is where all routes and middleware for buffalo
@@ -90,6 +91,7 @@ func App() *buffalo.App {
 			{
 				health.GET("/pm", PMHealthHandler)
 				health.GET("/wf", WFHealthHandler)
+				health.GET("/dm", DMHealthHandler)
 			}
 
 			// proxies to pm
