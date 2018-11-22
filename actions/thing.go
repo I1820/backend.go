@@ -140,8 +140,8 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 }
 
-// Tokens handles token request in pm.
-// Thin function is mapped to the path ANY /projects/{project_id}/things/{thing_id}/tokens/{path:.+}
+// Tokens handles token requests in pm.
+// This function is mapped to the path ANY /projects/{project_id}/things/{thing_id}/tokens/{path:.+}
 func (v ThingsResource) Tokens(c buffalo.Context) error {
 	projectID := c.Param("project_id")
 	thingID := c.Param("thing_id")
@@ -165,6 +165,98 @@ func (v ThingsResource) Tokens(c buffalo.Context) error {
 				"thingID":   thingID,
 				"path":      path,
 			}).Execute(method, "api/projects/{projectID}/things/{thingID}/tokens/{path}")
+			if err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			if resp.IsError() {
+				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+			}
+
+			return c.Render(http.StatusOK, r.JSON(t))
+		}
+	}
+
+	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+}
+
+// Assets handles asset requests in pm.
+// This function is mapped to the path ANY /projects/{project_id}/things/{thing_id}/assets/{path:.+}
+func (v ThingsResource) Assets(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+	thingID := c.Param("thing_id")
+	path := c.Param("path")
+	method := c.Value("current_route").(buffalo.RouteInfo).Method
+
+	// generic request so we can change it when pm `assetReq` is changed.
+	var rq interface{}
+	if err := c.Bind(&rq); err != nil {
+		// do noting on binding errors
+	}
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	for _, p := range u.Projects {
+		if p == projectID {
+			var t types.Thing
+
+			// do asset request
+			// I1820/pm/AssetsRequest
+			resp, err := pmclient.R().SetBody(rq).SetResult(&t).SetPathParams(map[string]string{
+				"projectID": projectID,
+				"thingID":   thingID,
+				"path":      path,
+			}).Execute(method, "api/projects/{projectID}/things/{thingID}/assets/{path}")
+			if err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			if resp.IsError() {
+				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+			}
+
+			return c.Render(http.StatusOK, r.JSON(t))
+		}
+	}
+
+	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+}
+
+// Connectivities handles connectivity requests in pm.
+// This function is mapped to the path ANY /projects/{project_id}/things/{thing_id}/connectivities/{path:.+}
+func (v ThingsResource) Connectivities(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+	thingID := c.Param("thing_id")
+	path := c.Param("path")
+	method := c.Value("current_route").(buffalo.RouteInfo).Method
+
+	// generic request so we can change it when pm `connectivityReq` is changed.
+	var rq interface{}
+	if err := c.Bind(&rq); err != nil {
+		// do noting on binding errors
+	}
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	for _, p := range u.Projects {
+		if p == projectID {
+			var t types.Thing
+
+			// do asset request
+			// I1820/pm/ConnecitivyRequest
+			resp, err := pmclient.R().SetBody(rq).SetResult(&t).SetPathParams(map[string]string{
+				"projectID": projectID,
+				"thingID":   thingID,
+				"path":      path,
+			}).Execute(method, "api/projects/{projectID}/things/{thingID}/connectivities/{path}")
 			if err != nil {
 				return c.Error(http.StatusInternalServerError, err)
 			}

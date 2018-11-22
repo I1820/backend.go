@@ -100,6 +100,8 @@ func App() *buffalo.App {
 				tr := ThingsResource{}
 				pg.Resource("things", tr)
 				pg.ANY("things/{thing_id}/tokens/{path:.*}", tr.Tokens)
+				pg.ANY("things/{thing_id}/assets/{path:.*}", tr.Assets)
+				pg.ANY("things/{thing_id}/connectivities/{path:.*}", tr.Connectivities)
 			}
 
 			// proxies to wf
