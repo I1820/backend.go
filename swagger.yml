@@ -2,26 +2,35 @@ openapi: 3.0.0
 info:
   title: I1820 API
   description: I1820, IoT Platform that can be used with LoRa, Zigbee and ... . Supported by Avidnet Technology.
-  version: 1.0.0
+  version: "3.0.0"
 
 servers:
   - url: /api/v1
 
 paths:
-  /auth:
-    /login:
-      post:
-        summery: checks given credentials and generate jwt token
-        requestBody:
-          required: true
+  /auth/login:
+    post:
+      summary: checks given credentials and generate jwt token
+      responses:
+        '200':
+          description: "Logged in successfully"
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  username: string
-                  password: string
-                  remember: boolean
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: 
+                  type: string
+                password:
+                  type: string
+                remember:
+                  type: boolean
 
 components:
   securitySchemes:
@@ -29,3 +38,23 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        projects:
+          type: array
+          items:
+            type: string
