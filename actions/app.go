@@ -104,6 +104,8 @@ func App() *buffalo.App {
 				pg.ANY("things/{thing_id}/tokens/{path:.*}", tr.Tokens)
 				pg.ANY("things/{thing_id}/assets/{path:.*}", tr.Assets)
 				pg.ANY("things/{thing_id}/connectivities/{path:.*}", tr.Connectivities)
+
+				pg.ANY("things/{thing_id}/queries/{path:.*}", QueryHandler)
 			}
 
 			// proxies to wf
