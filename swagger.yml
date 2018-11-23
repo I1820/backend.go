@@ -4,6 +4,25 @@ info:
   description: I1820, IoT Platform that can be used with LoRa, Zigbee and ... . Supported by Avidnet Technology.
   version: 1.0.0
 
+servers:
+  - url: /api/v1
+
+paths:
+  /auth:
+    /login:
+      post:
+        summery: checks given credentials and generate jwt token
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username: string
+                  password: string
+                  remember: boolean
+
 components:
   securitySchemes:
     i1820Auth:
