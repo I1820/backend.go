@@ -140,6 +140,43 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 }
 
+// Destroy deletes given thing from pm.
+// This function is mapped to the path DELETE /projects/{proejct_id}/things/{thing_id}
+func (v ThingsResource) Destroy(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+	thingID := c.Param("thing_id")
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	for _, p := range u.Projects {
+		if p == projectID {
+			var b bool
+
+			// removes a thing from pm
+			// I1820/pm/ThingsResource.Destroy
+			resp, err := pmclient.R().SetResult(&b).SetPathParams(map[string]string{
+				"projectID": projectID,
+				"thingID":   thingID,
+			}).Delete("api/projects/{projectID}/things/{thingID}")
+			if err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			if resp.IsError() {
+				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+			}
+
+			return c.Render(http.StatusOK, r.JSON(b))
+		}
+	}
+
+	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+}
+
 // Tokens handles token requests in pm.
 // This function is mapped to the path ANY /projects/{project_id}/things/{thing_id}/tokens/{path:.+}
 func (v ThingsResource) Tokens(c buffalo.Context) error {
