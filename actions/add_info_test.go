@@ -46,14 +46,14 @@ func (as *ActionSuite) Test_AdditionalsResource_Create() {
 
 	// Create (POST /api/v1/info/{key})
 	reqc := as.JSON("/api/v1/info/%s", iKey)
-	reqc.Headers["Authentication"] = fmt.Sprintf("Bearer %s", ur.AccessToken)
+	reqc.Headers["Authorization"] = fmt.Sprintf("Bearer %s", ur.AccessToken)
 	resc := reqc.Post(iValue)
 	as.Equalf(200, resc.Code, "Error: %s", resc.Body.String())
 
 	// Show (GET /api/v1/info/{key})
 	var v string
 	reqs := as.JSON("/api/v1/info/%s", iKey)
-	reqs.Headers["Authentication"] = fmt.Sprintf("Bearer %s", ur.AccessToken)
+	reqs.Headers["Authorization"] = fmt.Sprintf("Bearer %s", ur.AccessToken)
 	ress := reqs.Get()
 	as.Equalf(200, ress.Code, "Error: %s", ress.Body.String())
 	ress.Bind(&v)
