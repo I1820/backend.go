@@ -29,7 +29,7 @@ const uPass = "123123"
 func (as *ActionSuite) Test_AuthResource_Signup_Login() {
 	var ur models.User
 
-	// Create (POST /api/v1/auth/register)
+	// Signup (POST /api/v1/auth/register)
 	resr := as.JSON("/api/v1/auth/register").Post(signupReq{
 		Firstname: uFName,
 		Lastname:  uLName,
@@ -40,7 +40,7 @@ func (as *ActionSuite) Test_AuthResource_Signup_Login() {
 	as.Equalf(200, resr.Code, "Error: %s", resr.Body.String())
 	resr.Bind(&ur)
 
-	// check database for project existence
+	// check database for user existence
 	var ud models.User
 	dr := db.Collection("users").FindOne(context.Background(), bson.NewDocument(
 		bson.EC.String("username", uuName),
