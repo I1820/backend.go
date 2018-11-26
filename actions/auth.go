@@ -115,12 +115,13 @@ func (a AuthResource) Signup(c buffalo.Context) error {
 
 	// is there any need for hashing the password before store it in database?
 	u := models.User{
-		Firstname: rq.Firstname,
-		Lastname:  rq.Lastname,
-		Username:  rq.Username,
-		Email:     rq.Email,
-		Password:  rq.Password,
-		Projects:  make([]string, 0),
+		Firstname:      rq.Firstname,
+		Lastname:       rq.Lastname,
+		Username:       rq.Username,
+		Email:          rq.Email,
+		Password:       rq.Password,
+		Projects:       make([]string, 0),
+		AdditionalInfo: make(map[string]interface{}),
 	}
 	if _, err := db.Collection("users").InsertOne(c, u); err != nil {
 		return c.Error(http.StatusInternalServerError, err)
