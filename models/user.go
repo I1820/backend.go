@@ -27,4 +27,8 @@ type User struct {
 	RefreshToken string `json:"refresh_token,omitempty" bson:"-"` // token is used to generate a new token when the old one is expired.
 
 	Projects []string `json:"projects" bson:"projects"` // list of user owned projects
+
+	IsAdmin bool `json:"is_admin" bson:"is_admin"` // is he an admin?
+
+	AdditionalInfo map[string]interface{} `json:"additional_info", bson:"additional_info"` // applications can store everything they need for users in this field
 }
