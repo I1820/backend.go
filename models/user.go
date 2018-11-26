@@ -30,5 +30,5 @@ type User struct {
 
 	IsAdmin bool `json:"is_admin" bson:"is_admin"` // is he an admin?
 
-	AdditionalInfo map[string]interface{} `json:"additional_info", bson:"additional_info"` // applications can store everything they need for users in this field
+	AdditionalInfo map[string]interface{} `json:"additional_info" bson:"additional_info"` // applications can store everything they need for users in this field
 }
