@@ -38,7 +38,7 @@ func (as *ActionSuite) Test_AdditionalsResource_Create() {
 
 	// Login (POST /api/v1/auth/login)
 	resl := as.JSON("/api/v1/auth/login").Post(loginReq{
-		Username: uuName,
+		Username: fmt.Sprintf("additiona%s", uuName),
 		Password: uPass,
 	})
 	as.Equalf(200, resl.Code, "Error: %s", resl.Body.String())
