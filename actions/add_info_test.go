@@ -42,9 +42,8 @@ func (as *ActionSuite) Test_AdditionalsResource_Create() {
 		Password: uPass,
 	})
 	as.Equalf(200, resl.Code, "Error: %s", resl.Body.String())
-	resr.Bind(&ur)
+	resl.Bind(&ur)
 
-	fmt.Println(ur.AccessToken)
 	// Create (POST /api/v1/info/{key})
 	reqc := as.JSON("/api/v1/info/%s", iKey)
 	reqc.Headers["Authorization"] = fmt.Sprintf("Bearer %s", ur.AccessToken)
