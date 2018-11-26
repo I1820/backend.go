@@ -94,6 +94,15 @@ func App() *buffalo.App {
 				health.GET("/dm", DMHealthHandler)
 			}
 
+			// user additional info
+			ar := AdditionalsResource{}
+			ainfo := api.Group("/info")
+			ainfo.Use(AuthMiddleware)
+			{
+				ainfo.GET("/{key}", ar.Show)
+				ainfo.POST("/{key}", ar.Create)
+			}
+
 			// proxies to pm
 			api.Resource("projects", ProjectsResource{}).Use(AuthMiddleware)
 			pg := api.Group("projects/{project_id}")
