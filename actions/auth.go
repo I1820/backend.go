@@ -99,7 +99,7 @@ func getJwtToken(authString string) (string, error) {
 	return tokenString, nil
 }
 
-// Signup creates new user with given information amd store it in database.
+// Signup creates new user with given information and stores it in database.
 // Signup do not create any token for new user.
 // This function is mapped to the path
 // POST /register
