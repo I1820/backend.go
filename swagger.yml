@@ -10,8 +10,49 @@ servers:
 tags:
   - name: auth
     description: User registration and authorization
+  - name: projects
+    description: The way you can manage user's projects
 
 paths:
+  /projects:
+    get:
+      summary: lists user's projects
+      tags:
+        - projects
+      responses:
+        '200':
+          description: "Projects list is ready"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      summary: creates new project and if it successful then adds newly created project to user projects
+      tags:
+        - projects
+      responses:
+        '200':
+          description: "Create project successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "hello"
+                envs:
+                  type: object
+                  additionalProperties:
+                    type: string
   /auth/refresh:
     post:
       summary: refreshes given token with new expiration time.
@@ -64,6 +105,7 @@ paths:
                 email:
                   example: "parham.alvani@gmail.com"
                   type: string
+                  format: email
                 password:
                   example: "123123"
                   type: string
@@ -103,6 +145,15 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
     User:
       type: object
       properties:
@@ -114,6 +165,7 @@ components:
           type: string
         email:
           type: string
+          format: email
         access_token:
           type: string
         refresh_token:
