@@ -7,10 +7,71 @@ info:
 servers:
   - url: /api/v1
 
+tags:
+  - name: auth
+    description: User registration and authorization
+
 paths:
+  /auth/refresh:
+    post:
+      summary: refreshes given token with new expiration time.
+      tags:
+        - auth
+      responses:
+        '200':
+          description: "New access token"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+  /auth/register:
+    post:
+      summary: creates new user with given information and stores it in database.
+      tags:
+        - auth
+      responses:
+        '200':
+          description: "Successfull registration"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  example: "پرهام"
+                  type: string
+                lastname:
+                  example: "الوانی"
+                  type: string
+                username:
+                  example: "1995parham"
+                  type: string
+                email:
+                  example: "parham.alvani@gmail.com"
+                  type: string
+                password:
+                  example: "123123"
+                  type: string
   /auth/login:
     post:
       summary: checks given credentials and generate jwt token
+      tags:
+        - auth
       responses:
         '200':
           description: "Logged in successfully"
@@ -25,11 +86,14 @@ paths:
             schema:
               type: object
               properties:
-                username: 
+                username:
+                  example: "1995parham"
                   type: string
                 password:
+                  example: "123123"
                   type: string
                 remember:
+                  example: false
                   type: boolean
 
 components:
