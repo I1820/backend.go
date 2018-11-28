@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/go-resty/resty"
 	"github.com/gobuffalo/buffalo"
@@ -74,6 +75,9 @@ func App() *buffalo.App {
 
 		// Routes
 		app.GET("/about", AboutHandler)
+
+		// swagger ui
+		app.ServeFiles("/swagger", http.Dir("swagger"))
 
 		api := app.Group("/api/v1")
 		{
