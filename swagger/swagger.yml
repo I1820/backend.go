@@ -14,12 +14,43 @@ tags:
     description: The way you can manage user's projects
 
 paths:
+  /projects/{id}:
+    get:
+      summary: shows given project details
+      parameters:
+        - in: path
+          name: id
+          description: project identification
+          required: true
+          schema:
+            type: string
+      tags:
+        - projects
+      responses:
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '200':
+          description: "Project details is ready"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
   /projects:
     get:
       summary: lists user's projects
       tags:
         - projects
       responses:
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '200':
           description: "Projects list is ready"
           content:
@@ -33,6 +64,12 @@ paths:
       tags:
         - projects
       responses:
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'        
         '200':
           description: "Create project successfully"
           content:
@@ -59,6 +96,12 @@ paths:
       tags:
         - auth
       responses:
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '200':
           description: "New access token"
           content:
@@ -80,6 +123,12 @@ paths:
       tags:
         - auth
       responses:
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '200':
           description: "Successfull registration"
           content:
@@ -115,6 +164,12 @@ paths:
       tags:
         - auth
       responses:
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '200':
           description: "Logged in successfully"
           content:
@@ -145,6 +200,15 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        trace:
+          type: string
+        code:
+          type: number
     Project:
       type: object
       properties:
