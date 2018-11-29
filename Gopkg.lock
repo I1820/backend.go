@@ -224,7 +224,7 @@
   version = "v1.8.0"
 
 [[projects]]
-  digest = "1:43bf04a398e6d8a40ff234476c080fd04b27cb6a62d5ac87837fad4cc8e8b2d6"
+  digest = "1:e34abbdae5cf7b287b39ffb29d32c953a233ccff523db1d85eec1df83cbb81d8"
   name = "github.com/gobuffalo/buffalo"
   packages = [
     ".",
@@ -234,8 +234,8 @@
     "worker",
   ]
   pruneopts = "UT"
-  revision = "7dc6819f6cce0150869218165c210c445c3f3d93"
-  version = "v0.13.6"
+  revision = "0ff7229ba5aae57f03457fa12512b974be641822"
+  version = "v0.13.0"
 
 [[projects]]
   digest = "1:783552a64272c990bae4c47edcd023d18a3a26a8d931c237aefc21969d0cdcbf"
@@ -391,6 +391,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "311c6248e5fbdcd13b3ce364f00073506d8154e6"
+
+[[projects]]
+  digest = "1:05f90e1f4ad8f5ba56e4367b70183410fb6584390e06ed7dc79be3500ca54600"
+  name = "github.com/gobuffalo/packr"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba3c3ae9169fdc7b283f00a4b4c39346e444871c"
+  version = "v1.21.5"
 
 [[projects]]
   digest = "1:07e10ef52f5f704dfd64c7fa5760cff981be537008df04b10f7c7c70ed34a7f5"
