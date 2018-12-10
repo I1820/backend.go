@@ -12,8 +12,35 @@ tags:
     description: User registration and authorization
   - name: projects
     description: The way you can manage user's projects
+  - name: things
+    description: The way you can manage project's thing
+
+security:
+  - i1820Auth: []
 
 paths:
+  /projects/{id}/things:
+    get:
+      summary: lists project's thing
+      parameters:
+        - in: path
+          name: id
+          description: project identification
+          required: true
+          schema:
+            type: string
+      tags:
+        - things
+      responses:
+        '200':
+          description: "Things list is ready"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Thing"
+
   /projects/{id}:
     get:
       summary: shows given project details
@@ -200,6 +227,24 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    Asset:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        king:
+          type: string
+    Thing:
+      type: object
+      properties:
+        project:
+          type: string
+        assets:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/Asset"
     Error:
       type: object
       properties:
