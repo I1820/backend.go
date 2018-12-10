@@ -1,8 +1,18 @@
-openapi: 3.0.0
+
+ypepi: 3.0.0
 info:
   title: I1820 API
   description: I1820, IoT Platform that can be used with LoRa, Zigbee and ... . Supported by Avidnet Technology.
   version: "3.0.0"
+  contact:
+    name: Parham Alvani
+    email: parham.alvani@gmail.com
+  license:
+    name: GPL 3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+  externalDocs:
+    description: Find out more
+    url: https://I1820.github.io
 
 servers:
   - url: /api/v1
@@ -40,6 +50,46 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Thing"
+    post:
+      summary: Adds a thing to the DB and its project
+      parameters:
+        - in: path
+          name: id
+          description: project identification
+          required: true
+          schema:
+            type: string
+      tags:
+        - things
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "0000000000000073"
+                model:
+                  type: string
+                  example: "aolab"
+                location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                      example: 35.807657
+                    long:
+                      type: number
+                      example: 51.398408
+      responses:
+        '200':
+          description: "Create thing successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thing"
 
   /projects/{id}:
     get:
@@ -234,8 +284,10 @@ components:
           type: string
         type:
           type: string
+          enum: [number, boolean, string, object, location, array]
         king:
           type: string
+          enum: [sensor, actuator]
     Thing:
       type: object
       properties:
@@ -282,4 +334,4 @@ components:
         projects:
           type: array
           items:
-            type: string
+            type: string: string
