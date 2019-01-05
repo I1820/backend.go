@@ -79,7 +79,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/State"
 
-  /projects{id}/things/{tid}/queries/recently:
+  /projects/{id}/things/{tid}/queries/recently:
     post:
       summary: fetches given asset recent's data from database by default it fetches last 5 record.
       parameters:
