@@ -153,3 +153,51 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 
 	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
 }
+
+// Destroy deletes given project from pm and if it successful then removes it from user projects
+// This function is mapped to the path DELETE /projects/{proejct_id}
+func (v ProjectsResource) Destroy(c buffalo.Context) error {
+	projectID := c.Param("project_id")
+
+	// get user from request context
+	u, ok := c.Value("user").(models.User)
+	if !ok {
+		return c.Error(http.StatusInternalServerError, fmt.Errorf("There is no valid user in request context"))
+	}
+
+	for _, p := range u.Projects {
+		if p == projectID {
+			var p pmmodels.Project
+
+			// removes a thing from pm
+			// I1820/pm/ThingsResource.Destroy
+			resp, err := pmclient.R().SetResult(&p).SetPathParams(map[string]string{
+				"projectID": projectID,
+			}).Delete("api/projects/{projectID}")
+			if err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			if resp.IsError() {
+				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
+			}
+
+			// removes given project from user projects
+			dr := db.Collection("users").FindOneAndUpdate(c, bson.NewDocument(
+				bson.EC.String("username", u.Username),
+			), bson.NewDocument(
+				bson.EC.SubDocumentFromElements("$pull", bson.EC.SubDocumentFromElements("projects", bson.EC.String("_id", projectID))),
+			), findopt.ReturnDocument(mongoopt.After))
+			if err := dr.Decode(&u); err != nil {
+				return c.Error(http.StatusInternalServerError, err)
+			}
+
+			// and then update jwt token but how?
+			// it is on client for now
+
+			return c.Render(http.StatusOK, r.JSON(p))
+		}
+	}
+
+	return c.Error(http.StatusNotFound, fmt.Errorf("Project %s not found", projectID))
+}
