@@ -186,7 +186,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 			dr := db.Collection("users").FindOneAndUpdate(c, bson.NewDocument(
 				bson.EC.String("username", u.Username),
 			), bson.NewDocument(
-				bson.EC.SubDocumentFromElements("$pull", bson.EC.SubDocumentFromElements("projects", bson.EC.String("_id", projectID))),
+				bson.EC.SubDocumentFromElements("$pull", bson.EC.String("projects", projectID)),
 			), findopt.ReturnDocument(mongoopt.After))
 			if err := dr.Decode(&u); err != nil {
 				return c.Error(http.StatusInternalServerError, err)
