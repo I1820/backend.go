@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/go-resty/resty"
+	resty "gopkg.in/resty.v1"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	contenttype "github.com/gobuffalo/mw-contenttype"
