@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	resty "gopkg.in/resty.v1"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	contenttype "github.com/gobuffalo/mw-contenttype"
@@ -13,6 +12,7 @@ import (
 	mgo "github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/unrolled/secure"
 	validator "gopkg.in/go-playground/validator.v9"
+	resty "gopkg.in/resty.v1"
 
 	"github.com/I1820/types"
 	"github.com/gobuffalo/x/sessions"
@@ -73,6 +73,8 @@ func App() *buffalo.App {
 			app.Use(paramlogger.ParameterLogger)
 		}
 
+		// Slash issue
+		app.Muxer().StrictSlash(true)
 		// Routes
 		app.GET("/about", AboutHandler)
 
