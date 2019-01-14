@@ -52,7 +52,7 @@ func QueryHandler(c buffalo.Context) error {
 				"path":      path,
 			}).Execute(method, "api/projects/{projectID}/things/{thingID}/queries/{path}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("DM Service is not available"))
 			}
 			if resp.IsError() {
 				return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
