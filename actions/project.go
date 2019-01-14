@@ -50,13 +50,14 @@ func (v ProjectsResource) List(c buffalo.Context) error {
 	// I1820/pm/ProjectsResource.List
 	resp, err := pmclient.R().SetResult(&ps).Get("api/projects")
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 	}
 
 	if resp.IsError() {
 		return c.Render(resp.StatusCode(), r.JSON(resp.Error()))
 	}
 
+	// collects projects that are exist in user project list
 	for _, p := range ps {
 		for _, id := range u.Projects {
 			if p.ID == id {
@@ -96,7 +97,7 @@ func (v ProjectsResource) Create(c buffalo.Context) error {
 		"envs":  rq.Envs,
 	}).SetResult(&p).Post("api/projects")
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 	}
 
 	if resp.IsError() {
@@ -140,7 +141,7 @@ func (v ProjectsResource) Show(c buffalo.Context) error {
 				"projectID": projectID,
 			}).Get("api/projects/{projectID}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -175,7 +176,7 @@ func (v ProjectsResource) Destroy(c buffalo.Context) error {
 				"projectID": projectID,
 			}).Delete("api/projects/{projectID}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
