@@ -16,6 +16,7 @@ package actions
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/I1820/backend/models"
 	"github.com/gobuffalo/buffalo"
@@ -28,6 +29,10 @@ func QueryHandler(c buffalo.Context) error {
 	thingID := c.Param("thing_id")
 	path := c.Param("path")
 	method := c.Value("current_route").(buffalo.RouteInfo).Method
+
+	if strings.HasSuffix(path, "/") {
+		path = path[:len(path)-1]
+	}
 
 	// generic request so we can change it when pm `connectivityReq` is changed.
 	var rq interface{}
