@@ -14,6 +14,7 @@
 package actions
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
@@ -35,7 +36,7 @@ func WFHandler(c buffalo.Context) error {
 		"service": c.Param("service"),
 	}).Post("api/{service}")
 	if err != nil {
-		return c.Error(http.StatusInternalServerError, err)
+		return c.Error(http.StatusServiceUnavailable, fmt.Errorf("WF Service is not available"))
 	}
 
 	if resp.IsError() {

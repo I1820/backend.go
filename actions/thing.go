@@ -48,7 +48,7 @@ func (v ThingsResource) List(c buffalo.Context) error {
 				"projectID": projectID,
 			}).Get("api/projects/{projectID}/things")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -89,7 +89,7 @@ func (v ThingsResource) Create(c buffalo.Context) error {
 				"projectID": projectID,
 			}).Post("api/projects/{projectID}/things")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -126,7 +126,7 @@ func (v ThingsResource) Show(c buffalo.Context) error {
 				"thingID":   thingID,
 			}).Get("api/projects/{projectID}/things/{thingID}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -163,7 +163,7 @@ func (v ThingsResource) Destroy(c buffalo.Context) error {
 				"thingID":   thingID,
 			}).Delete("api/projects/{projectID}/things/{thingID}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -203,7 +203,7 @@ func (v ThingsResource) Tokens(c buffalo.Context) error {
 				"path":      path,
 			}).Execute(method, "api/projects/{projectID}/things/{thingID}/tokens/{path}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -249,7 +249,7 @@ func (v ThingsResource) Assets(c buffalo.Context) error {
 				"path":      path,
 			}).Execute(method, "api/projects/{projectID}/things/{thingID}/assets/{path}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
@@ -295,7 +295,7 @@ func (v ThingsResource) Connectivities(c buffalo.Context) error {
 				"path":      path,
 			}).Execute(method, "api/projects/{projectID}/things/{thingID}/connectivities/{path}")
 			if err != nil {
-				return c.Error(http.StatusInternalServerError, err)
+				return c.Error(http.StatusServiceUnavailable, fmt.Errorf("PM Service is not available"))
 			}
 
 			if resp.IsError() {
