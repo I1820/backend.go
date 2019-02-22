@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: I1820 API
-  description: I1820, IoT Platform that can be used with LoRa, Zigbee and ... . Supported by Avidnet Technology.
+  description: I1820, IoT Platform that can be used with LoRa, Zigbee and ...
   version: "3.0.0"
   contact:
     name: Parham Alvani
