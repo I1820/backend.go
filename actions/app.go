@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
@@ -59,10 +60,10 @@ func App() *buffalo.App {
 		url := envy.Get("DB_URL", "mongodb://172.18.0.1:27017")
 		client, err := mgo.NewClient(url)
 		if err != nil {
-			buffalo.NewLogger("fatal").Fatalf("DB new client error: %s", err)
+			log.Fatalf("DB new client error: %s", err)
 		}
 		if err := client.Connect(context.Background()); err != nil {
-			buffalo.NewLogger("fatal").Fatalf("DB connection error: %s", err)
+			log.Fatalf("DB connection error: %s", err)
 		}
 		db = client.Database("i1820")
 
