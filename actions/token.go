@@ -85,7 +85,7 @@ type UserClaims struct {
 func (uc UserClaims) Valid() error {
 	// if claims is expired, return with status unathorized
 	if uc.Exp.Before(time.Now()) {
-		return fmt.Errorf("Token is expired %g minutes ago", time.Now().Sub(uc.Exp).Minutes())
+		return fmt.Errorf("Token is expired %s ago", time.Since(uc.Exp))
 	}
 
 	return nil
